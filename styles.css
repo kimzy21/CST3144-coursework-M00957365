@@ -206,9 +206,17 @@ body {
 
 .checkout-form label {
     display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    gap: 0.3rem;
+}
+
+/* Only make checkbox & radio labels horizontal */
+.checkout-form label:has(input[type="checkbox"]),
+.checkout-form label:has(input[type="radio"]) {
+    flex-direction: row;
     align-items: center;
     gap: 0.5rem;
-    font-weight: 600;
 }
 
 /*align checkbox and radio labels properly*/

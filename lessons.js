@@ -3,8 +3,8 @@
 let products = [
     {
         id:1001,
-        title:"Cat Food 25 lb bag",
-        description:"Irresisitible cat food for your cat",
+        title:"Physics for dummies",
+        description:"Learn all the basics and principles of Physics - Easy for beginners.",
         price: 20.00,
         image: "Assets/physics.png",
         availableInventory: 3,
@@ -12,8 +12,8 @@ let products = [
     },
     {
         id:1002,
-        title:"Cat House",
-        description:"Irresisitible cat House for your cat",
+        title:"Biology 101",
+        description:"Discover the secrets of all living beings.",
         price: 2000,
         image: "Assets/biology.png",
         availableInventory: 5,
@@ -21,7 +21,8 @@ let products = [
     },
     {
         id:1003,
-        title:"Cat Litter",
+        title:"Calculus",
+        description: "Maths can be fun at times!",
         price: 1000,
         image: "Assets/calculus.png",
         availableInventory: 9,
@@ -29,8 +30,8 @@ let products = [
     },
     {
         id:1004,
-        title:"Laser Pointer",
-        description:"Irresisitible laser pointer for your cat",
+        title:"Le Français",
+        description:"Oui-oui baguette!",
         price: 25.99,
         image: "Assets/french.png",
         availableInventory: 9,
@@ -38,8 +39,8 @@ let products = [
     },
     {
         id:1005,
-        title:"Cat Toy Mindy Mouse",
-        description:"Irresisitible cat toy for your cat",
+        title:"Literature - a lost art.",
+        description:"Dive into the fabulous world of literature.",
         price: 3.99,
         image: "Assets/literature.png",
         availableInventory: 5,
@@ -47,8 +48,8 @@ let products = [
     },
     {
         id:1006,
-        title:"Cat Yarn",
-        description:"Irresisitible cat yarn for your cat",
+        title:"Chemistry",
+        description:"Molotov Cocktail?",
         price: 2.99,
         image: "Assets/chemistry.png",
         availableInventory: 3,

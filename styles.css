@@ -259,6 +259,20 @@ body {
     background-color: #073b4c;
 }
 
+/* Fix alignment for "Ship as gift?" checkbox */
+.checkout-form label:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkout-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #118ab2; /* nice blue to match your theme */
+  margin: 0;
+}
+
 .sort-controls {
   display: flex;
   align-items: center;

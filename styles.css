@@ -211,6 +211,28 @@ body {
     gap: 0.3rem;
 }
 
+/*align checkbox and radio labels properly*/
+.checkout-form label input[type="checkbox"],
+.checkout-form label input[type="radio"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.checkout-form label[for="gift"],
+.checkout-form .radio-group label {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/*ensure radio group displays inline horizontally*/
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
 .checkout-form input,
 .checkout-form select {
     padding: 0.5rem;

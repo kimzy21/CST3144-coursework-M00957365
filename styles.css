@@ -92,6 +92,10 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.location {
+    font-weight: bold;
+}
+
 .price {
     font-weight: bold;
     margin-top: 0.5rem;

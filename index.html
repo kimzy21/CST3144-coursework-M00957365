@@ -4,13 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="./styles.css" />
   <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-  <script src="lessons.js"></script>
   <title>Lesson Store</title>
 </head>
 
@@ -46,40 +42,23 @@
         <!-- Product Grid-->
         <div class="product-grid">
           <div v-for="product in sortedProducts" class="product-card">
-            <img
-              v-bind:src="product.image"
-              alt="Product Image"
-              class="product-image"
-            />
+            <img v-bind:src="product.image" alt="Product Image" class="product-image" />
             <h2>{{ product.title }}</h2>
             <p class="description">{{ product.description }}</p>
             <p class="price">Price: ${{ product.price }}</p>
 
             <div class="stock-info">
               <span v-if="itemsLeft(product) === 0" class="out">All out!</span>
-              <span
-                v-else-if="itemsLeft(product) <= 3"
-                class="low-stock"
-              >Only {{ itemsLeft(product) }} left!</span>
+              <span v-else-if="itemsLeft(product) <= 3" class="low-stock">Only {{ itemsLeft(product) }} left!</span>
               <span v-else class="available">Available</span>
             </div>
 
             <div class="rating">
-              <span
-                v-for="n in product.rating"
-                class="fa-solid fa-star"
-              ></span>
-              <span
-                v-for="n in 5 - product.rating"
-                class="fa-regular fa-star"
-              ></span>
+              <span v-for="n in product.rating" class="fa-solid fa-star"></span>
+              <span v-for="n in 5 - product.rating" class="fa-regular fa-star"></span>
             </div>
 
-            <button
-              v-if="canAddToCart(product)"
-              class="add-btn"
-              v-on:click="addToCart(product)"
-            >
+            <button v-if="canAddToCart(product)" class="add-btn" v-on:click="addToCart(product)">
               Add to Cart
             </button>
             <button v-else class="sold-out-btn" disabled>Sold Out</button>
@@ -121,13 +100,8 @@
           </label>
 
           <label>
-            <input
-              type="checkbox"
-              id="gift"
-              v-model="order.gift"
-              :true-value="order.sendGift"
-              :false-value="order.dontSendGift"
-            />
+            <input type="checkbox" id="gift" v-model="order.gift" :true-value="order.sendGift"
+              :false-value="order.dontSendGift" />
             Ship as gift?
           </label>
 
@@ -152,6 +126,65 @@
     </main>
   </div>
 
+  <script>
+    let products = [
+      {
+        id: 1001,
+        title: "Physics for dummies",
+        description: "Learn all the basics and principles of Physics - Easy for beginners.",
+        price: 20.00,
+        image: "Assets/physics.png",
+        availableInventory: 3,
+        rating: 3
+      },
+      {
+        id: 1002,
+        title: "Biology 101",
+        description: "Discover the secrets of all living beings.",
+        price: 2000,
+        image: "Assets/biology.png",
+        availableInventory: 5,
+        rating: 4
+      },
+      {
+        id: 1003,
+        title: "Calculus",
+        description: "Maths can be fun at times!",
+        price: 1000,
+        image: "Assets/calculus.png",
+        availableInventory: 9,
+        rating: 5
+      },
+      {
+        id: 1004,
+        title: "Le Français",
+        description: "Oui-oui baguette!",
+        price: 25.99,
+        image: "Assets/french.png",
+        availableInventory: 9,
+        rating: 4
+      },
+      {
+        id: 1005,
+        title: "Literature - a lost art.",
+        description: "Dive into the fabulous world of literature.",
+        price: 3.99,
+        image: "Assets/literature.png",
+        availableInventory: 5,
+        rating: 3
+      },
+      {
+        id: 1006,
+        title: "Chemistry",
+        description: "Molotov Cocktail?",
+        price: 2.99,
+        image: "Assets/chemistry.png",
+        availableInventory: 3,
+        rating: 2
+      },
+
+    ]
+  </script>
   <!-- Vue Script -->
   <script>
     var webstore = new Vue({
@@ -181,7 +214,7 @@
           //copy array to avoir mutating original
           let sorted = [...this.products];
 
-          sorted.sort((a,b) => {
+          sorted.sort((a, b) => {
             let key = this.sortKey;
 
             //convert strings to lowercase for consistent comparison
@@ -221,4 +254,5 @@
     });
   </script>
 </body>
+
 </html>

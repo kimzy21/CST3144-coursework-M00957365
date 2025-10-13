@@ -71,58 +71,74 @@
       <section v-else class="checkout-section">
         <h2>Checkout</h2>
 
-        <form class="checkout-form">
-          <label>
-            First Name:
-            <input v-model.trim="order.firstName" placeholder="Your First Name" />
-          </label>
+        <div class="checkout-container">
+          <!-- Left part: form-->
+          <form class="checkout-form">
+            <label>
+              First Name:
+              <input v-model.trim="order.firstName" placeholder="Your First Name" />
+            </label>
 
-          <label>
-            Last Name:
-            <input v-model.trim="order.lastName" placeholder="Your Last Name" />
-          </label>
+            <label>
+              Last Name:
+              <input v-model.trim="order.lastName" placeholder="Your Last Name" />
+            </label>
 
-          <label>
-            Address:
-            <input v-model.trim="order.address" placeholder="Your Address" />
-          </label>
+            <label>
+              Address:
+              <input v-model.trim="order.address" placeholder="Your Address" />
+            </label>
 
-          <label>
-            City:
-            <input v-model="order.city" placeholder="Your City" />
-          </label>
+            <label>
+              City:
+              <input v-model.trim="order.city" placeholder="Your City" />
+            </label>
 
-          <label>
-            District:
-            <select v-model="order.state">
-              <option disabled value="">Select District</option>
-              <option v-for="state in states" :key="state">{{ state }}</option>
-            </select>
-          </label>
+            <label>
+              District:
+              <select v-model="order.state">
+                <option disabled value="">Select District</option>
+                <option v-for="state in states" :key="state">{{ state }}</option>
+              </select>
+            </label>
 
-          <label>
-            <input type="checkbox" id="gift" v-model="order.gift" :true-value="order.sendGift"
-              :false-value="order.dontSendGift" />
-            Ship as gift?
-          </label>
+            <label>
+              <input type="checkbox" id="gift" v-model="order.gift" :true-value="order.sendGift"
+                :false-value="order.dontSendGift" />
+              Ship as gift?
+            </label>
 
-          <div class="radio-group">
-            <label><input type="radio" value="Home" v-model="order.method" /> Home</label>
-            <label><input type="radio" value="Business" v-model="order.method" /> Business</label>
+            <div class="radio-group">
+              <label><input type="radio" value="Home" v-model="order.method" /> Home</label>
+              <label><input type="radio" value="Business" v-model="order.method" /> Business</label>
+            </div>
+
+            <div class="checkout-buttons">
+              <button type="button" v-on:click="submitForm">Submit Order</button>
+              <button type="button" v-on:click="showCheckout">Back to Products</button>
+            </div>
+          </form>
+
+          <!--Right side: Order summary-->
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <p><strong>Name:</strong> {{ order.firstName }} {{ order.lastName }}</p>
+            <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}</p>
+            <p><strong>District:</strong> {{ order.state }}</p>
+            <p><strong>Shipping:</strong> {{ order.method }}</p>
+            <p><strong>Gift:</strong> {{ order.gift }}</p>
+
+            <div class="summary-total" v-if="cart.length">
+              <h4>Items in Cart: {{ cartItemCount }}</h4>
+              <ul>
+                <li v-for="id in cart">
+                  {{ products.find(p => p.id === id).title}} - ${{ products.find(p => p.id === id).price}}
+                </li>
+              </ul>
+              <p><strong>Total: ${{ totalPrice }}</strong></p>
+            </div>
           </div>
-
-          <h3>Order Information</h3>
-          <p><strong>Name:</strong> {{ order.firstName }} {{ order.lastName }}</p>
-          <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}</p>
-          <p><strong>District:</strong> {{ order.state }}</p>
-          <p><strong>Shipping:</strong> {{ order.method }}</p>
-          <p><strong>Gift:</strong> {{ order.gift }}</p>
-
-          <div class="checkout-buttons">
-            <button type="button" v-on:click="submitForm">Submit Order</button>
-            <button type="button" v-on:click="showCheckout">Back to Products</button>
-          </div>
-        </form>
+        </div>
       </section>
     </main>
   </div>
@@ -236,6 +252,12 @@
         },
         cartItemCount() {
           return this.cart.length;
+        },
+        totalPrice() {
+          return this.cart.reduce((sum, id) => {
+            const product = this.products.find(p => p.id === id);
+            return sum + (product ? product.price : 0);
+          }, 0).toFixed(2);
         }
       },
       methods: {

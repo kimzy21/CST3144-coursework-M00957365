@@ -6,7 +6,7 @@ let products = [
         title:"Cat Food 25 lb bag",
         description:"Irresisitible cat food for your cat",
         price: 20.00,
-        image: "dancing.png",
+        image: "banner.png",
         availableInventory: 3,
         rating:3
     },
@@ -15,7 +15,7 @@ let products = [
         title:"Cat House",
         description:"Irresisitible cat House for your cat",
         price: 2000,
-        image: "image/cat-house.jpg",
+        image: "Assets/biology.jpg",
         availableInventory: 5,
         rating:4
     },

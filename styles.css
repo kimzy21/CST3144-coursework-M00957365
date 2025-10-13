@@ -184,3 +184,21 @@ body {
 .checkout-buttons button:hover {
     background-color: #073b4c;
 }
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sort-controls label {
+  font-weight: 600;
+}
+
+.sort-controls select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}

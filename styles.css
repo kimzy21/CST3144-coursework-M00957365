@@ -13,6 +13,7 @@ button {
     padding: 0;
     box-sizing: border-box;
     font-family: "Segoe UI", sans-serif;
+    overflow-x: hidden;
 }
 
 body {
@@ -26,12 +27,13 @@ body {
     justify-content: flex-end;
     align-items: center;
     width: 100%;
+    padding: 0rem 2rem;
+    box-sizing: border-box;
     background-image: url("Assets/banner.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 180px;
-    padding: 0rem 2rem;
     border-bottom: 4px solid #ffd166;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
@@ -42,6 +44,9 @@ body {
 }
 
 .checkout-btn {
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
     background-color: #ffd166;
     color: #333;
     border: none;
@@ -183,18 +188,9 @@ body {
 }
 
 @media (max-width: 768px) {
-    .checkout-container {
-        grid-template-columns: 1fr; /* stack vertically */
-        padding: 1rem;
-    }
-
-    .checkout-section {
-        max-width: 100%; /* remove fixed max-width */
-    }
-
-    .checkout-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
+    .checkout-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
     }
 }
 

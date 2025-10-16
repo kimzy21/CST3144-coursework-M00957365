@@ -68,16 +68,21 @@ body {
 /* Product Grid */
 .product-section {
     padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
+    justify-items: center;
 }
 
 .product-card {
     background: white;
+    width: 100%;
+    max-width: 300px;
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
@@ -95,6 +100,12 @@ body {
 @media (max-width: 480px) {
     .product-grid {
         grid-template-columns: 1fr; /* single column */
+        justify-items: center;
+        gap: 1rem;
+    }
+
+    .product-card {
+        max-width: 100%;
     }
 
     .product-card h2 {

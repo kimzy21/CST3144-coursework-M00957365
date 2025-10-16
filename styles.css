@@ -29,6 +29,8 @@ body{
 @media (max-width: 480px) {
     body {
         background-position: top center;
+        background-attachment: fixed;
+        background-size: cover;
     }
 }
 

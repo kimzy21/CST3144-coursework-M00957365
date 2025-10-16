@@ -25,11 +25,6 @@ body{
     background-attachment: fixed;
 }
 
-body {
-    background-color: #f9f9fb;
-    color: #333;
-}
-
 /* Banner */
 .banner {
     display: flex;
@@ -94,7 +89,7 @@ body {
 }
 
 .product-card {
-    background: white;
+    background: rgb(248, 240, 227);
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
@@ -152,12 +147,12 @@ body {
 }
 
 .add-btn {
-    background-color: #06d6a0;
+    background-color: #87ab69;
     color: white;
 }
 
 .add-btn:hover {
-    background-color: #04b98a;
+    background-color: #75975e;
 }
 
 .sold-out-btn {
@@ -176,7 +171,7 @@ body {
 }
 
 .available {
-    color: #06d6a0;
+    color: #66963e;
 }
 
 .out {
@@ -268,7 +263,7 @@ body {
 .checkout-form input[type="radio"] {
     width: 18;
     height: 18;
-    accent-color: #118ab2;
+    accent-color: #e75480;
     margin-right: 0;
 }
 
@@ -293,7 +288,7 @@ body {
 }
 
 .checkout-buttons button {
-    background-color: #118ab2;
+    background-color: #87ab69;
     color: white;
     border: none;
     border-radius: 6px;
@@ -302,7 +297,7 @@ body {
 }
 
 .checkout-buttons button:hover {
-    background-color: #073b4c;
+    background-color: #75975e;
 }
 
 .sort-controls {

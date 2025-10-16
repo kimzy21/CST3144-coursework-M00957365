@@ -73,7 +73,7 @@ body {
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .product-card {
@@ -151,12 +151,25 @@ body {
 }
 
 .checkout-container {
-    display:grid;
+    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    align-items: start;
-    max-width: 1000px;
-    margin: 2rem auto;
+}
+
+@media (max-width: 768px) {
+    .checkout-container {
+        grid-template-columns: 1fr; /* stack vertically */
+        padding: 1rem;
+    }
+
+    .checkout-section {
+        max-width: 100%; /* remove fixed max-width */
+    }
+
+    .checkout-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 .order-summary {
@@ -277,4 +290,36 @@ body {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 0.95rem;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.product-image {
+    width: 100%;
+    height: auto; /* ensures scaling on small screens */
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem;
+    color: white;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .image-overlay h2 {
+        font-size: 1rem;
+    }
+    .image-overlay p, .image-overlay span {
+        font-size: 0.8rem;
+    }
 }

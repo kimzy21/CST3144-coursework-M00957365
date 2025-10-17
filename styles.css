@@ -18,7 +18,7 @@ button {
 }
 
 body{
-    position: relative;
+    position: absolute;
 }
 
 body::before {

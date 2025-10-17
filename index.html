@@ -130,6 +130,19 @@
 
             <div class="summary-total" v-if="cart.length">
               <h4>Items in Cart: {{ cartItemCount }}</h4>
+              <div v-for="(id, index) in cart" :key="index" class="order-item">
+                <img :src="products.find(p => p.id === id).image" class="order-item-image" />
+                <div class="order-item-details">
+                  <h4>{{ products.find(p => p.id === id).title }}</h4>
+                  <p class="description">{{ products.find(p => p.id === id).description }}</p>
+                  <p class="location">{{ products.find(p => p.id === id).location }}</p>
+                  <p class="price">$ {{ products.find(p => p.id === id).price }}</p>
+                </div>
+                <button class="delete-button" @click="removeFromCart(index)">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+              <p><strong>Total: ${{ totalPrice }}</strong></p>
               <ul>
                 <li v-for="id in cart">
                   {{ products.find(p => p.id === id).title}} - ${{ products.find(p => p.id === id).price}}
@@ -314,6 +327,9 @@
         },
         showCheckout() {
           this.showProduct = !this.showProduct;
+        },
+        removeFromCart(index) {
+          this.cart.splice(index, 1);
         },
         submitForm() {
           alert(`Thank you for your order, ${this.order.firstName}!`);

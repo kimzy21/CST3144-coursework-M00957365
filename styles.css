@@ -107,7 +107,7 @@ body::before {
 }
 
 .product-card {
-    background: rgb(248, 240, 227);
+    background: rgb(226, 193, 141);
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
@@ -121,7 +121,7 @@ body::before {
     height: auto; /* keeps aspect ratio */
     border-radius: 8px;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
 }
 
 @media (max-width: 480px) {
@@ -165,12 +165,12 @@ body::before {
 }
 
 .add-btn {
-    background-color: #87ab69;
+    background-color: #77a055;
     color: white;
 }
 
 .add-btn:hover {
-    background-color: #75975e;
+    background-color: #5f764f;
 }
 
 .sold-out-btn {
@@ -200,7 +200,10 @@ body::before {
 .checkout-section {
     padding: 2rem;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 2rem auto;
+    background: rgb(248, 240, 227);
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .checkout-container {
@@ -265,7 +268,8 @@ body::before {
     display: flex;
     flex-direction: column;
     font-weight: 600;
-    gap: 0.3rem;
+    gap: 0.8rem;
+    padding: 1rem;
 }
 
 /* Only make checkbox & radio labels horizontal */

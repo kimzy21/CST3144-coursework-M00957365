@@ -14,7 +14,8 @@
   <div id="webstore">
     <!-- Banner -->
     <header class="banner">
-      <button class="checkout-btn" v-on:click="showCheckout">
+      <button class="checkout-btn" v-on:click="showCheckout" :disabled="cart.length === 0"
+        :class="{ disabled: cart.length === 0 }">
         <span class="fa-solid fa-cart-shopping"></span>
         Checkout ({{ cartItemCount }})
       </button>
@@ -73,33 +74,23 @@
 
         <div class="checkout-container">
           <!-- Left part: form-->
-          <form class="checkout-form">
+          <form class="checkout-form" @submit.prevent="submitForm">
             <label>
               First Name:
               <input v-model.trim="order.firstName" placeholder="Your First Name" />
+              <span class="error" v-if="firstNameError">{{ firstNameError }}</span>
             </label>
 
             <label>
               Last Name:
               <input v-model.trim="order.lastName" placeholder="Your Last Name" />
+              <span class="error" v-if="lastNameError">{{ lastNameError }}</span>
             </label>
 
             <label>
-              Address:
-              <input v-model.trim="order.address" placeholder="Your Address" />
-            </label>
-
-            <label>
-              City:
-              <input v-model.trim="order.city" placeholder="Your City" />
-            </label>
-
-            <label>
-              District:
-              <select v-model="order.state">
-                <option disabled value="">Select District</option>
-                <option v-for="state in states" :key="state">{{ state }}</option>
-              </select>
+              Phone:
+              <input v-model.trim="order.phone" placeholder="Your phone number" />
+              <span class="error" v-if="phoneError">{{ phoneError }}</span>
             </label>
 
             <label>
@@ -114,7 +105,9 @@
             </div>
 
             <div class="checkout-buttons">
-              <button type="button" v-on:click="submitForm">Submit Order</button>
+              <button type="submit" :disabled="!isFormValid" :class="{ disabled: !isFormValid }">
+                Submit Order
+              </button>
               <button type="button" v-on:click="showCheckout">Back to Products</button>
             </div>
           </form>
@@ -123,8 +116,7 @@
           <div class="order-summary">
             <h3>Order Summary</h3>
             <p><strong>Name:</strong> {{ order.firstName }} {{ order.lastName }}</p>
-            <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}</p>
-            <p><strong>District:</strong> {{ order.state }}</p>
+            <p><strong>Phone:</strong> {{ order.phone }}</p>
             <p><strong>Shipping:</strong> {{ order.method }}</p>
             <p><strong>Gift:</strong> {{ order.gift }}</p>
 
@@ -269,16 +261,12 @@
         order: {
           firstName: '',
           lastName: '',
-          address: '',
-          city: '',
-          state: '',
+          phone: '',
           method: 'Home',
           gift: 'Do not send as Gift',
           sendGift: 'Send as Gift',
           dontSendGift: 'Do not send as Gift'
-        },
-        states: ['State 1', 'State 2', 'State 3', 'State 4'],
-        message: 'Welcome to the Lesson Store!'
+        }
       },
       computed: {
         sortedProducts() {
@@ -297,6 +285,28 @@
             return 0;
           });
           return sorted;
+        },
+        firstNameError() {
+          if (!this.order.firstName) return "First name is required";
+          if (!/^[A-Za-z\s]+$/.test(this.order.firstName)) return "Only letters allowed";
+          return "";
+        },
+        lastNameError() {
+          if (!this.order.lastName) return "Last Name is required";
+          if (!/^[A-Za-z\s]+$/.test(this.order.lastName)) return "Only letters allowed";
+          return "";
+        },
+        phoneError() {
+          if (!this.order.phone) return "Phone is required";
+          if (!/^[0-9]+$/.test(this.order.phone)) return "Only numbers allowed";
+          return "";
+        },
+        isFormValid() {
+          return !(
+            this.firstNameError ||
+            this.lastNameError ||
+            this.phoneError
+          );
         },
         cartItemCount() {
           return this.cart.length;
@@ -328,7 +338,31 @@
           this.cart.splice(index, 1);
         },
         submitForm() {
-          alert(`Thank you for your order, ${this.order.firstName}!`);
+          const namePattern = /^[A-Za-z\\s]+$/;
+          const phonePattern = /^[0-9]+$/;
+
+          if (!namePattern.test(this.order.firstName)) {
+            alert("❌ Please enter only letters in First Name.");
+            return;
+          }
+          if (!namePattern.test(this.order.lastName)) {
+            alert("❌ Please enter only letters in Last Name.");
+            return;
+          }
+          alert(`✅ Thank you, ${this.order.firstName}! Your order has been placed.`);
+
+          // reset everything
+          this.order = {
+            firstName: "",
+            lastName: "",
+            phone: "",
+            method: "Home",
+            gift: "Do not send as Gift",
+            sendGift: "Send as Gift",
+            dontSendGift: "Do not send as Gift"
+          };
+          this.cart = [];
+          this.showProduct = true;
         }
       }
     });

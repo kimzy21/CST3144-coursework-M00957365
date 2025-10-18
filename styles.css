@@ -80,6 +80,13 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.checkout-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
 .checkout-btn:hover {
     background-color: #ffb703;
 }
@@ -410,3 +417,15 @@ body::before {
   border: 1px solid #ccc;
   font-size: 0.95rem;
 }
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  display: block;
+  margin-top: 2px;
+}
+button.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+

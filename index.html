@@ -130,24 +130,20 @@
 
             <div class="summary-total" v-if="cart.length">
               <h4>Items in Cart: {{ cartItemCount }}</h4>
-              <div v-for="(id, index) in cart" :key="index" class="order-item">
-                <img :src="products.find(p => p.id === id).image" class="order-item-image" />
-                <div class="order-item-details">
-                  <h4>{{ products.find(p => p.id === id).title }}</h4>
-                  <p class="description">{{ products.find(p => p.id === id).description }}</p>
-                  <p class="location">{{ products.find(p => p.id === id).location }}</p>
-                  <p class="price">$ {{ products.find(p => p.id === id).price }}</p>
+              <div class="order-item-scroll">
+                <div v-for="(id, index) in cart" :key="index" class="order-item">
+                  <img :src="products.find(p => p.id === id).image" class="order-item-image" />
+                  <div class="order-item-details">
+                    <h4>{{ products.find(p => p.id === id).title }}</h4>
+                    <p class="description">{{ products.find(p => p.id === id).description }}</p>
+                    <p class="location">{{ products.find(p => p.id === id).location }}</p>
+                    <p class="price">$ {{ products.find(p => p.id === id).price }}</p>
+                  </div>
+                  <button class="delete-button" @click="removeFromCart(index)">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
                 </div>
-                <button class="delete-button" @click="removeFromCart(index)">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
               </div>
-              <p><strong>Total: ${{ totalPrice }}</strong></p>
-              <ul>
-                <li v-for="id in cart">
-                  {{ products.find(p => p.id === id).title}} - ${{ products.find(p => p.id === id).price}}
-                </li>
-              </ul>
               <p><strong>Total: ${{ totalPrice }}</strong></p>
             </div>
           </div>
@@ -163,7 +159,7 @@
         title: "Physics for dummies",
         description: "Learn all the basics and principles of Physics - Easy for beginners.",
         location: "London",
-        price: 20.00,
+        price: 20.45,
         image: "Assets/physics.png",
         availableInventory: 3,
         rating: 3
@@ -173,7 +169,7 @@
         title: "Biology 101",
         description: "Discover the secrets of all living beings.",
         location: "Amsterdam",
-        price: 2000,
+        price: 49.65,
         image: "Assets/biology.png",
         availableInventory: 5,
         rating: 4
@@ -183,7 +179,7 @@
         title: "Calculus",
         description: "Maths can be fun at times!",
         location: "Quebec",
-        price: 1000,
+        price: 95.99,
         image: "Assets/maths.png",
         availableInventory: 9,
         rating: 5
@@ -193,7 +189,7 @@
         title: "Le Français",
         description: "Oui-oui baguette!",
         location: "Luxembourg",
-        price: 25.99,
+        price: 55.99,
         image: "Assets/french.png",
         availableInventory: 9,
         rating: 4
@@ -203,7 +199,7 @@
         title: "Literature - a lost art.",
         description: "Dive into the fabulous world of literature.",
         location: "London",
-        price: 3.99,
+        price: 83.99,
         image: "Assets/literature.png",
         availableInventory: 5,
         rating: 3
@@ -213,7 +209,7 @@
         title: "Chemistry",
         description: "Molotov Cocktail?",
         location: "Paris",
-        price: 2.99,
+        price: 62.99,
         image: "Assets/chemistry.png",
         availableInventory: 3,
         rating: 2
@@ -223,7 +219,7 @@
         title: "Art",
         description: "Paint",
         location: "Australia",
-        price: 5.99,
+        price: 75.99,
         image: "Assets/art.png",
         availableInventory: 8,
         rating: 4
@@ -243,7 +239,7 @@
         title: "Food Studies",
         description: "What's for dinner?",
         location: "Washington DC",
-        price: 25.95,
+        price: 55.95,
         image: "Assets/food.png",
         availableInventory: 1,
         rating: 5

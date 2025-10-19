@@ -380,7 +380,7 @@
 
           // 🧾 Header
           doc.setFontSize(18);
-          doc.text("Lesson Store - Invoice", 105, 20, null, null, "center");
+          doc.text("Brain Cart - Invoice", 105, 20, null, null, "center");
 
           // 🧍 Customer Info
           doc.setFontSize(12);
@@ -397,31 +397,39 @@
           yPos += 8;
 
           doc.setFontSize(12);
+          doc.setFont(undefined, "bold");
           doc.text("Lesson", 20, yPos);
-          doc.text("Location", 80, yPos);
-          doc.text("Price ($)", 150, yPos);
+          doc.text("Location", 90, yPos, null, null, "center");
+          doc.text("Price ($)", 180, yPos, null, null, "right");
+          doc.setFont(undefined, "normal");
 
-          yPos += 6;
+          yPos += 3;
           doc.line(20, yPos, 190, yPos); // divider line
+          yPos += 6;
 
           // 🧮 Loop through cart items
-          yPos += 8;
           this.cart.forEach(id => {
             const p = this.products.find(prod => prod.id === id);
             doc.text(p.title, 20, yPos);
             doc.text(p.location, 80, yPos);
-            doc.text(p.price.toFixed(2), 150, yPos, null, null, "right");
+            doc.text(p.price.toFixed(2), 180, yPos, null, null, "right");
             yPos += 8;
+
+            //subtle row line
+            doc.setDrawColor(230);
+            doc.line(20, yPos, 190, yPos);
           });
 
           // 📦 Total
           yPos += 10;
           doc.setFontSize(13);
-          doc.text(`Total: $${this.totalPrice}`, 150, yPos, null, null, "right");
+          doc.setFont(undefined, "bold");
+          doc.text(`Total: $${this.totalPrice}`, 180, yPos, null, null, "right");
 
           // 🧾 Footer
           yPos += 20;
           doc.setFontSize(10);
+          doc.setFont(undefined, "normal");
           doc.text("Thank you for shopping with Lesson Store!", 105, yPos, null, null, "center");
 
           // 💾 Download PDF

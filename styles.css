@@ -94,6 +94,15 @@ body::before {
     background-color: #ffb703;
 }
 
+.cancel-Order {
+  background-color: #d9534f;
+  color: white;
+}
+
+.cancel-Order:hover {
+  background-color: #c9302c;
+}
+
 /*responsive behavior for screen adjustment*/
 @media (max-width: 700px) {
     .banner {

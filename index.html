@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="./styles.css?v=5" />
+  <link rel="stylesheet" href="./styles.css" />
   <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <title>Lesson Store</title>
@@ -113,7 +113,12 @@
               <button type="submit" :disabled="!isFormValid" :class="{ disabled: !isFormValid }">
                 Submit Order
               </button>
-              <button type="button" v-on:click="showCheckout">Back to Products</button>
+              <button type="button" v-on:click="showCheckout">
+                Back to Products
+              </button>
+              <button type="button" class="cancel-Order" v-on:click="cancelOrder">
+                Cancel Oder
+              </button>
             </div>
           </form>
 
@@ -168,7 +173,8 @@
           gift: 'Do not send as Gift',
           sendGift: 'Send as Gift',
           dontSendGift: 'Do not send as Gift'
-        }
+        },
+        currentOrderId: null
       },
       computed: {
         filteredProducts() {
@@ -252,6 +258,13 @@
       methods: {
         addToCart(product) {
           this.cart.push(product.id);
+          if (this.currentOrderId) {
+            fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
+              method: "PUT",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({ cart: this.cart })
+            });
+          }
         },
         cartCount(id) {
           return this.cart.filter(item => item === id).length;
@@ -263,12 +276,37 @@
           return product.availableInventory - this.cartCount(product.id);
         },
         showCheckout() {
+          //when checkout is clicked the first time
+          if (this.showProduct === true && this.currentOrderId === null) {
+            fetch("http://localhost:3000/order/start", { method: "POST" })
+              .then(res => res.json())
+              .then(result => {
+                this.currentOrderId = result.orderId;
+              });
+          }
           this.showProduct = !this.showProduct;
         },
         removeFromCart(index) {
           this.cart.splice(index, 1);
+          if (this.currentOrderId) {
+            fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
+              method: "PUT",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({ cart: this.cart })
+            });
+          }
         },
-        submitForm() {
+        cancelOrder() {
+          if (this.currentOrderId) {
+            fetch(`http://localhost:3000/order/${this.currentOrderId}`, {
+              method: "DELETE"
+            });
+            this.currentOrderId = null;
+            this.cart = [];
+            this.showProduct = true;
+          }
+        },
+        async submitForm() {
           const namePattern = /^[A-Za-z\\s]+$/;
           const phonePattern = /^[0-9]+$/;
 
@@ -282,6 +320,40 @@
           }
           if (!phonePattern.test(this.order.phone)) {
             alert("❌ Please enter only numbers in phone.")
+            return;
+          }
+
+          //upon final order submission
+          const orderData = {
+            firstName: this.order.firstName,
+            lastName: this.order.lastName,
+            phone: this.order.phone,
+            method: this.order.method,
+            gift: this.order.gift,
+            cart: this.cart, //array of product IDs
+            total: this.totalPrice //total price of order
+          };
+
+          try {
+            //save the final order into MongoDB
+            const response = await fetch("http://localhost:3000/orders/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(orderData)
+            });
+            const savedOrder = await response.json();
+
+            //update inventory in mongodb
+            await fetch("http://localhost:3000/orders/updateInventory", {
+              method: "PUT",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({ cart: this.cart })
+            });
+            console.log("Order saved:", savedOrder);
+          } catch (err) {
+            console.error("Order submission failed", err);
+            alert("❌ Could not save your order. Please try again.");
+            return;
           }
           alert(`✅ Thank you, ${this.order.firstName}! Your order has been placed.`);
 

@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="./styles.css" />
   <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <title>Lesson Store</title>
 </head>
 
@@ -98,17 +97,6 @@
               <span class="error" v-if="phoneError">{{ phoneError }}</span>
             </label>
 
-            <label>
-              <input type="checkbox" id="gift" v-model="order.gift" :true-value="order.sendGift"
-                :false-value="order.dontSendGift" />
-              Ship as gift?
-            </label>
-
-            <div class="radio-group">
-              <label><input type="radio" value="Home" v-model="order.method" /> Home</label>
-              <label><input type="radio" value="Business" v-model="order.method" /> Business</label>
-            </div>
-
             <div class="checkout-buttons">
               <button type="submit" :disabled="!isFormValid" :class="{ disabled: !isFormValid }">
                 Submit Order
@@ -127,19 +115,17 @@
             <h3>Order Summary</h3>
             <p><strong>Name:</strong> {{ order.firstName }} {{ order.lastName }}</p>
             <p><strong>Phone:</strong> {{ order.phone }}</p>
-            <p><strong>Shipping:</strong> {{ order.method }}</p>
-            <p><strong>Gift:</strong> {{ order.gift }}</p>
-
+            
             <div class="summary-total" v-if="cart.length">
               <h4>Items in Cart: {{ cartItemCount }}</h4>
               <div class="order-item-scroll">
-                <div v-for="(id, index) in cart" :key="index" class="order-item">
-                  <img :src="products.find(p => p.id === id).image" class="order-item-image" />
+                <div v-for="(item, index) in cart" :key="index" class="order-item">
+                  <img :src="products.find(p => p.id === item.id).image" class="order-item-image" />
                   <div class="order-item-details">
-                    <h4>{{ products.find(p => p.id === id).title }}</h4>
-                    <p class="description">{{ products.find(p => p.id === id).description }}</p>
-                    <p class="location">{{ products.find(p => p.id === id).location }}</p>
-                    <p class="price">$ {{ products.find(p => p.id === id).price }}</p>
+                    <h4>{{ products.find(p => p.id === item.id).title }}</h4>
+                    <p class="description">{{ products.find(p => p.id === item.id).description }}</p>
+                    <p class="location">{{ products.find(p => p.id === item.id).location }}</p>
+                    <p class="price">$ {{ products.find(p => p.id === item.id).price }}</p>
                   </div>
                   <button class="delete-button" @click="removeFromCart(index)">
                     <i class="fa-solid fa-trash-can"></i>
@@ -168,11 +154,7 @@
         order: {
           firstName: '',
           lastName: '',
-          phone: '',
-          method: 'Home',
-          gift: 'Do not send as Gift',
-          sendGift: 'Send as Gift',
-          dontSendGift: 'Do not send as Gift'
+          phone: ''
         },
         currentOrderId: null
       },
@@ -234,10 +216,7 @@
           return this.cart.length;
         },
         totalPrice() {
-          return this.cart.reduce((sum, id) => {
-            const product = this.products.find(p => p.id === id);
-            return sum + (product ? product.price : 0);
-          }, 0).toFixed(2);
+          return this.cart.reduce((sum, item) => sum + item.price, 0)
         }
       },
       watch: {
@@ -256,18 +235,29 @@
       },
 
       methods: {
-        addToCart(product) {
-          this.cart.push(product.id);
-          if (this.currentOrderId) {
-            fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
-              method: "PUT",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({ cart: this.cart })
+        async addToCart(product) {
+          // If no order exists yet, create one immediately
+          if (!this.currentOrderId) {
+            const res = await fetch("http://localhost:3000/order/start", {
+              method: "POST"
             });
+            const result = await res.json();
+            this.currentOrderId = result.orderId;
           }
-        },
+
+          // Now update local cart
+          this.cart.push(product);
+
+          // And sync to DB
+          await fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cart: this.cart.map(p => p.id) })
+          });
+        }
+        ,
         cartCount(id) {
-          return this.cart.filter(item => item === id).length;
+          return this.cart.filter(item => item.id === id).length;
         },
         canAddToCart(product) {
           return product.availableInventory > this.cartCount(product.id);
@@ -278,7 +268,9 @@
         showCheckout() {
           //when checkout is clicked the first time
           if (this.showProduct === true && this.currentOrderId === null) {
-            fetch("http://localhost:3000/order/start", { method: "POST" })
+            fetch("http://localhost:3000/order/start", {
+              method: "POST"
+            })
               .then(res => res.json())
               .then(result => {
                 this.currentOrderId = result.orderId;
@@ -291,7 +283,7 @@
           if (this.currentOrderId) {
             fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
               method: "PUT",
-              headers: {"Content-Type": "application/json"},
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ cart: this.cart })
             });
           }
@@ -323,32 +315,32 @@
             return;
           }
 
+          if (!this.currentOrderId) {
+              alert("❌ Cannot submit — no orderId exists. Add items first.");
+              return;
+          }
+
           //upon final order submission
           const orderData = {
             firstName: this.order.firstName,
             lastName: this.order.lastName,
             phone: this.order.phone,
-            method: this.order.method,
-            gift: this.order.gift,
-            cart: this.cart, //array of product IDs
+            cart: this.cart.map(p => p.id), //array of product IDs
             total: this.totalPrice //total price of order
           };
 
           try {
             //save the final order into MongoDB
-            const response = await fetch("http://localhost:3000/orders/submit", {
+            const response = await fetch(`http://localhost:3000/order/${this.currentOrderId}/submit`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(orderData)
             });
-            const savedOrder = await response.json();
 
-            //update inventory in mongodb
-            await fetch("http://localhost:3000/orders/updateInventory", {
-              method: "PUT",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({ cart: this.cart })
-            });
+            if (!response.ok) {
+              throw new Error("Server rejected order");
+            }
+            const savedOrder = await response.json();
             console.log("Order saved:", savedOrder);
           } catch (err) {
             console.error("Order submission failed", err);
@@ -356,18 +348,13 @@
             return;
           }
           alert(`✅ Thank you, ${this.order.firstName}! Your order has been placed.`);
-
-          this.generatePDF();
+          await this.loadProducts();
 
           // reset everything
           this.order = {
             firstName: "",
             lastName: "",
-            phone: "",
-            method: "Home",
-            gift: "Do not send as Gift",
-            sendGift: "Send as Gift",
-            dontSendGift: "Do not send as Gift"
+            phone: ""
           };
           this.cart = [];
           this.showProduct = true;
@@ -392,68 +379,9 @@
             console.error("Error performing search:", error);
           }
         },
-
-        async generatePDF() {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-
-          const img = new Image();
-          img.src = "Assets/brain-cart-icon.png";
-          doc.addImage(img, "PNG", 10, 10, 25, 25);
-
-          // 🧾 Header
-          doc.setFontSize(18);
-          doc.text("Brain Cart - Invoice", 105, 20, null, null, "center");
-
-          // 🧍 Customer Info
-          doc.setFontSize(12);
-          doc.text(`Name: ${this.order.firstName} ${this.order.lastName}`, 20, 40);
-          doc.text(`Phone: ${this.order.phone}`, 20, 48);
-          doc.text(`Shipping Method: ${this.order.method}`, 20, 56);
-          doc.text(`Gift: ${this.order.gift}`, 20, 64);
-          doc.text(`Date: ${new Date().toLocaleString()}`, 20, 72);
-
-          // 🛒 Table Header
-          let yPos = 90;
-          doc.setFontSize(14);
-          doc.text("Items Purchased:", 20, yPos);
-          yPos += 8;
-
-          doc.setFontSize(12);
-          doc.setFont(undefined, "bold");
-          doc.text("Lesson", 20, yPos);
-          doc.text("Location", 90, yPos, null, null, "center");
-          doc.text("Price ($)", 180, yPos, null, null, "right");
-          doc.setFont(undefined, "normal");
-
-          yPos += 3;
-          doc.line(20, yPos, 190, yPos); // divider line
-          yPos += 6;
-
-          // 🧮 Loop through cart items
-          this.cart.forEach(id => {
-            const p = this.products.find(prod => prod.id === id);
-            doc.text(p.title, 20, yPos);
-            doc.text(p.location, 80, yPos);
-            doc.text(p.price.toFixed(2), 180, yPos, null, null, "right");
-            yPos += 8;
-          });
-
-          // 📦 Total
-          yPos += 10;
-          doc.setFontSize(13);
-          doc.setFont(undefined, "bold");
-          doc.text(`Total: $${this.totalPrice}`, 180, yPos, null, null, "right");
-
-          // 🧾 Footer
-          yPos += 20;
-          doc.setFontSize(10);
-          doc.setFont(undefined, "normal");
-          doc.text("Thank you for shopping with us! Awaiting your next order!", 105, yPos, null, null, "center");
-
-          // 💾 Download PDF
-          const filename = `LessonStore_Invoice_${this.order.firstName}_${this.order.lastName}.pdf`;
-          doc.save(filename);
+        async loadProducts() {
+          const res = await fetch("http://localhost:3000/collections/products");
+          this.products = await res.json();
         }
       }
     });

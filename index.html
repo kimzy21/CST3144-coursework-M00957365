@@ -284,18 +284,21 @@
             fetch(`http://localhost:3000/order/${this.currentOrderId}/cart`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ cart: this.cart })
+              body: JSON.stringify({ cart: this.cart.map(p => p.id) })
             });
           }
         },
-        cancelOrder() {
+        async cancelOrder() {
           if (this.currentOrderId) {
             fetch(`http://localhost:3000/order/${this.currentOrderId}`, {
               method: "DELETE"
             });
-            this.currentOrderId = null;
             this.cart = [];
+            this.currentOrderId = null;
             this.showProduct = true;
+
+            //reload from backend
+            await this.loadProducts();
           }
         },
         async submitForm() {
@@ -357,6 +360,7 @@
             phone: ""
           };
           this.cart = [];
+          this.currentOrderId = null;
           this.showProduct = true;
         },
         async searchLessons() {

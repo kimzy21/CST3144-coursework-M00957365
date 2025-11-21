@@ -284,6 +284,13 @@
           }
         },
         async cancelOrder() {
+          //confirmation for order cancellation
+          const confirmed = confirm("Are you sure you want to cancel the order?");
+
+          //if user clicks on cancel - stop action here
+          if (!confirmed) return;
+
+
           if (this.currentOrderId) {
             fetch(`https://cst3144-coursework-m00957365-backend.onrender.com/order/${this.currentOrderId}`, {
               method: "DELETE"
@@ -294,6 +301,9 @@
 
             //reload from backend
             await this.loadProducts();
+
+            //show order cancellation message
+            alert("Order successfully cancelled!")
           }
         },
         async submitForm() {

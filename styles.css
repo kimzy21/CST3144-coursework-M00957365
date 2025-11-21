@@ -95,12 +95,17 @@ body::before {
 }
 
 .cancel-Order {
-  background-color: #d9534f;
+  background-color: #d60000;
   color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .cancel-Order:hover {
-  background-color: #c9302c;
+  background-color: #a00000;
 }
 
 /*responsive behavior for screen adjustment*/

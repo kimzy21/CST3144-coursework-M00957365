@@ -23,8 +23,8 @@
 
     <main>
       <!-- Search Section -->
-      <section class="search-bar">
-        <input type="text" v-model="searchQuery" placeholder="Search lessons..." />
+      <section v-if="showProduct" class="search-bar">
+        <input type="text" v-model="searchQuery" placeholder="Search lessons..." @input="searchLessons" />
       </section>
       <!-- Sort Grid-->
       <section v-if="showProduct" class="product-section">
@@ -217,11 +217,6 @@
         },
         totalPrice() {
           return this.cart.reduce((sum, item) => sum + item.price, 0)
-        }
-      },
-      watch: {
-        searchQuery: function () {
-          this.searchLessons();
         }
       },
       created() {

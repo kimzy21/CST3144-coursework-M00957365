@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font Awesone for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="./styles.css" />
   <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
@@ -14,6 +15,9 @@
   <div id="webstore">
     <!-- Banner -->
     <header class="banner">
+      <!-- checkout button initially disabled to not conflict with order start route in backend -->
+      <!-- only becomes clickable once an object has been added to cart and confirm order start -->
+      <!-- Can use a boolean to check cart and activate checkout button -->
       <button class="checkout-btn" v-on:click="showCheckout" :disabled="cart.length === 0"
         :class="{ disabled: cart.length === 0 }">
         <span class="fa-solid fa-cart-shopping"></span>
@@ -24,6 +28,10 @@
     <main>
       <!-- Search Section -->
       <section v-if="showProduct" class="search-bar">
+        <!-- v-model binds input to reactive data, @input triggers search on keystroke -->
+        <!-- if removed, search won't happen live, only after manually triggered -->
+        <!-- The code structure will trigger a backend search upon every keystroke (API called on every key pressed)-->
+         <!-- debounce can be used to create a short period of inactivity before calling the function making only  API call-->
         <input type="text" v-model="searchQuery" placeholder="Search lessons..." @input="searchLessons" />
       </section>
       <!-- Sort Grid-->
@@ -37,6 +45,9 @@
             <option value="availableInventory">Availability</option>
           </select>
 
+          <!-- v-model keeps sort options reactive-->
+          <!-- if changed, sorting won't updated product grid automatically-->
+          <!-- Instead of sorting in the frontend, backend sort can be used-->
           <label>Order:</label>
           <select v-model="sortOrder">
             <option value="asc">Ascending</option>
@@ -57,6 +68,8 @@
               <span v-if="itemsLeft(product) === 0" class="out">All out!</span>
               <span v-else-if="itemsLeft(product) <= 3" class="low-stock">Only {{ itemsLeft(product) }} left!</span>
               <span v-else class="available">Available</span>
+              <!-- shows real-time stock remaining-->
+              <!-- conditional statement used here to prevent users from adding when product is sold-out. -->
             </div>
 
             <div class="rating">
@@ -67,6 +80,7 @@
             <button v-if="canAddToCart(product)" class="add-btn" v-on:click="addToCart(product)">
               Add to Cart
             </button>
+            <!-- Button becomes disabled once stock reaches 0-->
             <button v-else class="sold-out-btn" disabled>Sold Out</button>
           </div>
         </div>
@@ -79,25 +93,34 @@
         <div class="checkout-container">
           <!-- Left part: form-->
           <form class=" checkout-form " @submit.prevent="submitForm">
+            <!-- prevent default page reload -->
+            <!-- an alternative is to allow regular form submit with backend validation -->
             <label>
               First Name:
               <input v-model.trim="order.firstName" placeholder="Your First Name" />
               <span class="error" v-if="firstNameError">{{ firstNameError }}</span>
+              <!-- validation feedback for user -->
+              <!-- if removed invalid name format can be submitted -->
             </label>
 
             <label>
               Last Name:
               <input v-model.trim="order.lastName" placeholder="Your Last Name" />
               <span class="error" v-if="lastNameError">{{ lastNameError }}</span>
+              <!-- validation feedback for user -->
+              <!-- if removed invalid name format can be submitted -->
             </label>
 
             <label>
               Phone:
               <input v-model.trim="order.phone" placeholder="Your phone number" />
               <span class="error" v-if="phoneError">{{ phoneError }}</span>
+              <!-- validation feedback for user -->
+              <!-- if removed invalid number format can be submitted -->
             </label>
 
             <div class="checkout-buttons">
+            <!--initially disabled to prevent users from submitting an empty order form info -->
               <button type="submit" :disabled="!isFormValid" :class="{ disabled: !isFormValid }">
                 Submit Order
               </button>
@@ -111,6 +134,7 @@
           </form>
 
           <!--Right side: Order summary-->
+          <!-- Updated in real time as the user enters their info-->
           <div class="order-summary">
             <h3>Order Summary</h3>
             <p><strong>Name:</strong> {{ order.firstName }} {{ order.lastName }}</p>
@@ -129,6 +153,8 @@
                   </div>
                   <button class="delete-button" @click="removeFromCart(index)">
                     <i class="fa-solid fa-trash-can"></i>
+                    <!-- shows dynamic cart contents, delete button allows removing items -->
+                    <!-- also updates backend immediately when removing -->
                   </button>
                 </div>
               </div>
@@ -145,21 +171,22 @@
     var webstore = new Vue({
       el: '#webstore',
       data: {
-        showProduct: true,
-        searchQuery: "", // for search input
-        products: [],
-        cart: [],
+        showProduct: true, //to change between catalog and checkout page
+        searchQuery: "", // for search input - binds it
+        products: [], //stores fetched products
+        cart: [], //local cart state when making an order - default cart is empty
         sortKey: 'title', //default sorting when page is launched
         sortOrder: 'asc', //default sorting when page is launched
-        order: {
+        order: { //order form
           firstName: '',
           lastName: '',
           phone: ''
         },
-        currentOrderId: null
+        currentOrderId: null //backend order ID
       },
       computed: {
         filteredProducts() {
+          //filter catalog based on search input
           if (!this.searchQuery.trim()) {
             return this.products;
           }
@@ -168,13 +195,13 @@
             return (
               product.title.toLowerCase().includes(searchTerm) ||
               product.location.toLowerCase().includes(searchTerm) ||
-              product.price.toString().toLowerCase().includes(searchTerm) ||
-              product.availableInventory.toString().toLowerCase().includes(searchTerm)
+              product.description.toLowerCase().includes(searchTerm)
+              //if changed, search becomes case sensitive or slower if filtered in backend only
             );
           });
         },
         sortedProducts() {
-          //copy array to avoir mutating original
+          //copy array to avoid mutating original
           let sorted = [...this.filteredProducts];
 
           sorted.sort((a, b) => {
@@ -184,27 +211,41 @@
             let aVal = typeof a[key] === 'string' ? a[key].toLowerCase() : a[key];
             let bVal = typeof b[key] === 'string' ? b[key].toLowerCase() : b[key];
 
+            //custom comparison function used by Array.sort()
+            //-ve value → a comes before b
+            //+ve value → b comes before a
+            //0 → keep original order
+            //if data had something like product.details.price, this code would break. Helper function needed to access nested properties.
+            //if a product is missing the property, must handle it to avoid undefined < value issues.
+            //for strings with accents (é, ü), toLowerCase() may not sort as a human expects. Could use localeCompare
+            // if (typeof aVal === 'string') return aVal.localeCompare(bVal) * (this.sortOrder === 'asc' ? 1 : -1);
             if (aVal < bVal) return this.sortOrder === 'asc' ? -1 : 1;
             if (aVal > bVal) return this.sortOrder === 'asc' ? 1 : -1;
             return 0;
           });
+          //ensures dynamic reactive sorting
           return sorted;
         },
+        //prevents user from typing anything but letters in field
         firstNameError() {
           if (!this.order.firstName) return "First name is required";
           if (!/^[A-Za-z\s]+$/.test(this.order.firstName)) return "Only letters allowed";
           return "";
         },
+        //prevents user from typing anything but letters in field
         lastNameError() {
           if (!this.order.lastName) return "Last Name is required";
           if (!/^[A-Za-z\s]+$/.test(this.order.lastName)) return "Only letters allowed";
           return "";
         },
+        //prevents user from typing anything but numbers in field
         phoneError() {
           if (!this.order.phone) return "Phone is required";
           if (!/^[0-9]+$/.test(this.order.phone)) return "Only numbers allowed";
           return "";
         },
+        //checks if fields are filled correctly then enables submit order button
+        //otherwise, button stays disabled
         isFormValid() {
           return !(
             this.firstNameError ||
@@ -213,13 +254,14 @@
           );
         },
         cartItemCount() {
-          return this.cart.length;
+          return this.cart.length; //counts items in cart
         },
         totalPrice() {
-          return this.cart.reduce((sum, item) => sum + item.price, 0)
+          return this.cart.reduce((sum, item) => sum + item.price, 0) //calculated total price in real time for automatic updates
         }
       },
       created() {
+        //fetch products as page is accessed
         fetch("https://cst3144-coursework-m00957365-backend.onrender.com/collections/products")
           .then(response => response.json())
           .then(res => {
@@ -231,7 +273,7 @@
 
       methods: {
         async addToCart(product) {
-          // If no order exists yet, create one immediately
+          //if no order exists yet, create one immediately but only once an item has been added to the cart
           if (!this.currentOrderId) {
             const res = await fetch("https://cst3144-coursework-m00957365-backend.onrender.com/order/start", {
               method: "POST"
@@ -240,19 +282,21 @@
             this.currentOrderId = result.orderId;
           }
 
-          // Now update local cart
+          //update local cart
           this.cart.push(product);
 
-          // And sync to DB
+          //and sync to DB
+          //this fetch will sync local cart with backend and update content dynamically
           await fetch(`https://cst3144-coursework-m00957365-backend.onrender.com/order/${this.currentOrderId}/cart`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ cart: this.cart.map(p => p.id) })
-          });
+          }); //if fetch fails? wrap in try/catch and rollback local cart
         }
         ,
         cartCount(id) {
           return this.cart.filter(item => item.id === id).length;
+          //could use Map for O(1) - maintain a cart Map keyed by product id
         },
         canAddToCart(product) {
           return product.availableInventory > this.cartCount(product.id);
@@ -262,24 +306,33 @@
         },
         showCheckout() {
           //when checkout is clicked the first time
+          //can Vue Router for better scalability and route history
           if (this.showProduct === true && this.currentOrderId === null) {
+            //if switching to checkout for the first time and no order exists
+            //start a new order on backend to get a unique orderId
             fetch("https://cst3144-coursework-m00957365-backend.onrender.com/order/start", {
               method: "POST"
             })
               .then(res => res.json())
               .then(result => {
                 this.currentOrderId = result.orderId;
+                //could use async/await for cleaner syntax
               });
           }
           this.showProduct = !this.showProduct;
+          //flip boolean to show checkout if catalog was visible, or catalog if checkout was visible
         },
         removeFromCart(index) {
+          //remove an item at specific index from local cart
           this.cart.splice(index, 1);
+
+          //update backend cart if order exists
           if (this.currentOrderId) {
             fetch(`https://cst3144-coursework-m00957365-backend.onrender.com/order/${this.currentOrderId}/cart`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ cart: this.cart.map(p => p.id) })
+              //could send full object to avoid extra fetches, but wastes bandwidth
             });
           }
         },
@@ -289,12 +342,12 @@
 
           //if user clicks on cancel - stop action here
           if (!confirmed) return;
-
-
           if (this.currentOrderId) {
+            //delete order from backend
             fetch(`https://cst3144-coursework-m00957365-backend.onrender.com/order/${this.currentOrderId}`, {
               method: "DELETE"
             });
+            //reset cart - orderId - back to catalog
             this.cart = [];
             this.currentOrderId = null;
             this.showProduct = true;
@@ -307,22 +360,27 @@
           }
         },
         async submitForm() {
-          const namePattern = /^[A-Za-z\\s]+$/;
-          const phonePattern = /^[0-9]+$/;
+          //form validation patterns
+          const namePattern = /^[A-Za-z\\s]+$/; //only letters and spaces allowed
+          const phonePattern = /^[0-9]+$/; //only digits allowed
 
+          //validate first name
           if (!namePattern.test(this.order.firstName)) {
             alert("❌ Please enter only letters in First Name.");
             return;
           }
+          //validate last name
           if (!namePattern.test(this.order.lastName)) {
             alert("❌ Please enter only letters in Last Name.");
             return;
           }
+          //validate phone
           if (!phonePattern.test(this.order.phone)) {
             alert("❌ Please enter only numbers in phone.")
             return;
           }
 
+          //ensure an order exists before submission
           if (!this.currentOrderId) {
               alert("❌ Cannot submit — no orderId exists. Add items first.");
               return;
@@ -338,11 +396,13 @@
           };
 
           try {
-            //save the final order into MongoDB
+            //submit order to backend and save the final order into MongoDB
             const response = await fetch(`https://cst3144-coursework-m00957365-backend.onrender.com/order/${this.currentOrderId}/submit`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+              method: "POST", // HTTP method: POST is used to send data to the server
+              headers: { "Content-Type": "application/json" }, // tells server that body content is JSON
               body: JSON.stringify(orderData)
+              // converts the JavaScript object 'orderData' into a JSON string
+              // because fetch can only send text in the body, not objects
             });
 
             if (!response.ok) {
@@ -356,7 +416,7 @@
             return;
           }
           alert(`✅ Thank you, ${this.order.firstName}! Your order has been placed.`);
-          await this.loadProducts();
+          await this.loadProducts(); //reload page automatically to update inventory
 
           // reset everything
           this.order = {
@@ -372,25 +432,37 @@
           if (this.searchQuery.trim() === "") {
             // If search box is cleared, show all products
             fetch("https://cst3144-coursework-m00957365-backend.onrender.com/collections/products")
+            //first .then(): handle the Response object returned by fetch
+            //convert the response body to JSON
+            //response.json() returns a Promise because parsing may take some time
               .then(response => response.json())
+              //second .then(): handle the actual data parsed from JSON
+              //assign the parsed data (array of products) to Vue reactive property 'products'
+              //this triggers the UI to update automatically wherever 'products' is used
               .then(res => this.products = res)
+              //catch any errors that occur in the fetch or JSON parsing
+              //log errors for debugging
               .catch(error => console.error("Error fetching all products:", error));
             return;
           }
 
           try {
+            //fetch search results from backend
             const response = await fetch(
               `https://cst3144-coursework-m00957365-backend.onrender.com/search?query=${encodeURIComponent(this.searchQuery)}`
             );
             const data = await response.json();
             this.products = data;
+            //could use a debounce function to reduce API calls
           } catch (error) {
             console.error("Error performing search:", error);
           }
         },
         async loadProducts() {
+          //fetch the entire products collection
           const res = await fetch("https://cst3144-coursework-m00957365-backend.onrender.com/collections/products");
           this.products = await res.json();
+          //could use localStorage/sessionStorage for faster reloads
         }
       }
     });

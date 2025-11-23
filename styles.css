@@ -10,43 +10,46 @@ li,
 input,
 select,
 button {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", sans-serif;
-    overflow-x: hidden;
+    margin: 0; /* remove default spacing */
+    padding: 0; 
+    box-sizing: border-box; /* makes width/height include padding & border */
+    font-family: "Segoe UI", sans-serif; /* uniform font for all elements */
+    overflow-x: hidden; /* prevent horizontal scrollbars on small screens */
 }
 
+/* Ensure body positioning for fixed elements or pseudo-elements */
 body{
     position: relative;
 }
 
+/* Overlay background image for entire page */
 body::before {
     content: "";
-    position: fixed;
+    position: fixed; /* stay in place while scrolling */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-image: url("Assets/backgroundimage.png");
-    background-size: cover;
-    background-position: center;
-    opacity: 0.4;
-    z-index: -1;
+    background-size: cover; /* stretch to cover entire page */
+    background-position: center; /* center the image */
+    opacity: 0.4; /* slightly transparent */
+    z-index: -1; /* behind all content */
 
 }
+/* Mobile responsiveness for background */
 @media (max-width: 480px) {
     body {
         background-position: top center;
         background-size: cover;
-        background-attachment: scroll;
+        background-attachment: scroll; /* prevent fixed background issues on mobile */
     }
 }
 
 /* Banner */
 .banner {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* aligns checkout button right */
     align-items: center;
     width: 100%;
     padding: 0rem 2rem;
@@ -57,18 +60,18 @@ body::before {
     background-repeat: no-repeat;
     height: 180px;
     border-bottom: 4px solid #ffd166;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* subtle shadow */
 }
 
 .banner h1 {
     font-size: 2rem;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5); /* improves readability on image */
 }
 
 .checkout-btn {
     max-width: 100%;
     box-sizing: border-box;
-    white-space: nowrap;
+    white-space: nowrap; /* prevent button text from wrapping */
     background-color: #ffd166;
     color: #333;
     border: none;
@@ -80,9 +83,10 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* Disabled state for checkout button */
 .checkout-btn:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
+  cursor: not-allowed; /* visual feedback for disabled button */
 }
 
 .checkout-btn:disabled:hover {
@@ -90,6 +94,7 @@ body::before {
     cursor: not-allowed;
 }
 
+/* Hover effect */
 .checkout-btn:hover {
     background-color: #ffb703;
 }
@@ -106,16 +111,18 @@ body::before {
 .product-section {
     padding: 2rem;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; /* center section */
 }
 
+/* Grid for products */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* responsive columns */
     gap: 1rem;
     justify-content: center;
 }
 
+/* Individual product card */
 .product-card {
     background: rgb(226, 193, 141);
     border-radius: 12px;
@@ -126,6 +133,7 @@ body::before {
     max-width: 100%;
 }
 
+/* Product image styles */
 .product-image {
     width: 100%;
     height: auto; /* keeps aspect ratio */
@@ -135,6 +143,7 @@ body::before {
     padding-bottom: 0;
 }
 
+/* Mobile responsive adjustments */
 @media (max-width: 480px) {
     .product-grid {
         grid-template-columns: 1fr; /* single column */
@@ -156,6 +165,7 @@ body::before {
     }
 }
 
+/* Product text styling */
 .location {
     font-weight: bold;
 }
@@ -165,6 +175,7 @@ body::before {
     margin-top: 0.5rem;
 }
 
+/* Buttons for adding to cart or sold out */
 .add-btn,
 .sold-out-btn {
     margin-top: 0.6rem;
@@ -196,15 +207,15 @@ body::before {
 }
 
 .low-stock {
-    color: #ef476f;
+    color: #ef476f; /* red warning */
 }
 
 .available {
-    color: #66963e;
+    color: #66963e; /* green for available */
 }
 
 .out {
-    color: #999;
+    color: #999; /* gray for sold out */
 }
 
 /* Checkout Form */
@@ -219,10 +230,11 @@ body::before {
 
 .checkout-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* form on left, summary on right */
     gap: 1rem;
 }
 
+/* Mobile responsive: single column checkout */
 @media (max-width: 768px) {
     .checkout-btn {
         padding: 0.5rem 1rem;
@@ -247,6 +259,7 @@ body::before {
     margin: 0.5rem 0;
 }
 
+/* Individual order item */
 .order-item {
     display: flex;
     align-items: flex-start;
@@ -266,7 +279,7 @@ body::before {
 }
 
 .order-item-details {
-    flex: 1;
+    flex: 1; /* fill remaining space */
 }
 
 .order-item-details h4 {
@@ -294,8 +307,8 @@ body::before {
 
 /* Scroll area ONLY for product cards in receipt */
 .order-item-scroll {
-  max-height: 250px;        /* adjust as needed */
-  overflow-y: auto;
+  max-height: 250px; /* limit height */
+  overflow-y: auto; /* vertical scroll */
   margin-bottom: 1rem;
   padding-right: 0.5rem;
   scrollbar-width: thin;
@@ -339,6 +352,7 @@ body::before {
     }
 }
 
+/* Checkout form styling */
 .checkout-form {
     display: flex;
     flex-direction: column;
@@ -360,6 +374,7 @@ body::before {
     border: 1px solid #cccccc;
 }
 
+/* Buttons in checkout */
 .checkout-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -419,6 +434,7 @@ body::before {
   font-size: 0.95rem;
 }
 
+/* Error message styling */
 .error {
   color: red;
   font-size: 0.9em;
